@@ -10,6 +10,6 @@ RUN go build -o main .
 FROM debian:bullseye-slim
 WORKDIR /app
 COPY --from=builder /app/main .
-COPY frontend ./frontend # Copy the frontend folder
+COPY ./frontend ./frontend # Adjust the path to match the context
 EXPOSE 8080
 CMD ["./main"]
