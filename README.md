@@ -1,12 +1,14 @@
 # Monday-light
 
-run inside backend
+## Cheat sheet
 
+### Go Dependencies
+
+```
 go mod init monday-light
 go mod tidy
-
-
-## Cheat sheet
+go get github.com/gin-gonic/gin
+```
 
 ### HTMX
 
@@ -130,3 +132,31 @@ work_dir = "."
 build_delay = 200
 color_scheme = "default"
 ```
+```
+
+### PostgreSQL :
+Ajoutez le driver PostgreSQL (`github.com/lib/pq`) à votre projet Go en exécutant la commande suivante :
+
+```bash
+go get github.com/lib/pq
+```
+
+### Chaîne de connexion :
+Voici les paramètres principaux pour configurer la connexion à PostgreSQL :
+- **host** : Adresse de votre serveur PostgreSQL.
+- **port** : Port utilisé (par défaut `5432`).
+- **user** : Nom d'utilisateur.
+- **password** : Mot de passe.
+- **dbname** : Nom de la base de données.
+- **sslmode=disable** : Désactive SSL (utile pour le développement local).
+
+Voici un exemple de chaîne de connexion :
+```text
+host=localhost port=5432 user=yourusername password=yourpassword dbname=yourdatabase sslmode=disable
+```
+
+### Fonctionnalités principales :
+- **`sql.Open`** : Initialise une connexion à la base de données.
+- **`db.Ping`** : Vérifie que la connexion est valide.
+- **`db.Query`** : Exécute une requête SQL et retourne les résultats.
+- **`rows.Next`** et **`rows.Scan`** : Itère sur les résultats et les extrait.
