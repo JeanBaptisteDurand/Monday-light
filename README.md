@@ -12,34 +12,61 @@ go get github.com/gin-gonic/gin
 
 ### HTMX
 
-[
-  { "hx-get": "/get-example", "description": "Sends a GET request to fetch data from the server." },
-  { "hx-post": "/post-example", "description": "Sends a POST request with data to the server." },
-  { "hx-target": "#result", "description": "Specifies the element to update with the server response." },
-  { "hx-trigger": "click", "description": "Triggers the request when the element is clicked." },
-  { "hx-trigger": "every 5s", "description": "Triggers the request periodically, every 5 seconds." },
-  { "hx-trigger": "load", "description": "Triggers the request when the page loads." },
-  { "hx-trigger": "change", "description": "Triggers the request when the value of an input changes." },
-  { "hx-swap": "innerHTML", "description": "Replaces the inner HTML of the target element." },
-  { "hx-swap": "outerHTML", "description": "Replaces the entire target element with the response." },
-  { "hx-swap": "beforeend", "description": "Appends the response content to the end of the target element." },
-  { "hx-swap": "afterbegin", "description": "Prepends the response content to the start of the target element." },
-  { "hx-swap": "beforebegin", "description": "Inserts the response content before the target element." },
-  { "hx-swap": "afterend", "description": "Inserts the response content after the target element." },
-  { "hx-on": "htmx:responseError", "description": "Executes JavaScript when a server error occurs." },
-  { "hx-vals": "{ 'key': 'value' }", "description": "Sends additional parameters with the request." },
-  { "hx-headers": "{ 'Authorization': 'Bearer TOKEN' }", "description": "Adds custom headers to the request." },
-  { "hx-indicator": "#loading", "description": "Shows a loading indicator during the request." },
-  { "hx-push-url": "true", "description": "Pushes the request URL into the browser history." },
-  { "hx-select": ".row", "description": "Selects specific elements from the server response." },
-  { "hx-select-oob": ".notification", "description": "Processes out-of-band (OOB) elements from the response." },
-  { "hx-confirm": "Are you sure?", "description": "Shows a confirmation dialog before sending the request." },
-  { "hx-disable": "true", "description": "Disables the element to prevent duplicate requests." },
-  { "hx-history": "false", "description": "Disables browser history for this request." },
-  { "hx-include": "#form-id", "description": "Includes additional elements with the request." },
-  { "hx-preserve": "true", "description": "Preserves the target element instead of replacing it." },
-  { "hx-replace-url": "/new-url", "description": "Replaces the current browser URL with the new URL." }
-]
+| Attribute         | Example Value             | Description                                                                 |
+|-------------------|---------------------------|-----------------------------------------------------------------------------|
+| `hx-get`         | `/get-example`            | Sends a GET request to fetch data from the server.                         |
+| `hx-post`        | `/post-example`           | Sends a POST request with data to the server.                              |
+| `hx-target`      | `#result`                 | Specifies the element to update with the server response.                  |
+| `hx-trigger`     | `click`                   | Triggers the request when the element is clicked.                          |
+| `hx-trigger`     | `every 5s`                | Triggers the request periodically, every 5 seconds.                        |
+| `hx-trigger`     | `load`                    | Triggers the request when the page loads.                                  |
+| `hx-trigger`     | `change`                  | Triggers the request when the value of an input changes.                   |
+| `hx-swap`        | `innerHTML`               | Replaces the inner HTML of the target element.                             |
+| `hx-swap`        | `outerHTML`               | Replaces the entire target element with the response.                      |
+| `hx-swap`        | `beforeend`               | Appends the response content to the end of the target element.             |
+| `hx-swap`        | `afterbegin`              | Prepends the response content to the start of the target element.          |
+| `hx-swap`        | `beforebegin`             | Inserts the response content before the target element.                    |
+| `hx-swap`        | `afterend`                | Inserts the response content after the target element.                     |
+| `hx-on`          | `htmx:responseError`      | Executes JavaScript when a server error occurs.                            |
+| `hx-vals`        | `{ 'key': 'value' }`      | Sends additional parameters with the request.                              |
+| `hx-headers`     | `{ 'Authorization': '...' }` | Adds custom headers to the request.                                       |
+| `hx-indicator`   | `#loading`                | Shows a loading indicator during the request.                              |
+| `hx-push-url`    | `true`                    | Pushes the request URL into the browser history.                           |
+| `hx-select`      | `.row`                    | Selects specific elements from the server response.                        |
+| `hx-select-oob`  | `.notification`           | Processes out-of-band (OOB) elements from the response.                    |
+| `hx-confirm`     | `Are you sure?`           | Shows a confirmation dialog before sending the request.                    |
+| `hx-disable`     | `true`                    | Disables the element to prevent duplicate requests.                        |
+| `hx-history`     | `false`                   | Disables browser history for this request.                                 |
+| `hx-include`     | `#form-id`                | Includes additional elements with the request.                             |
+| `hx-preserve`    | `true`                    | Preserves the target element instead of replacing it.                      |
+| `hx-replace-url` | `/new-url`                | Replaces the current browser URL with the new URL.                         |
+
+### GIN + Template
+
+```
+// Route pour générer les lignes dynamiques
+r.GET("/generate-rows", func(c *gin.Context) {
+    // Générer des lignes aléatoires
+    rows := make([]map[string]interface{}, 5)
+    for i := 0; i < 5; i++ {
+        rows[i] = map[string]interface{}{
+            "ID":    i + 1,
+            "Value": rand.Intn(100), // Génère une valeur aléatoire
+        }
+    }
+    c.HTML(http.StatusOK, "rows.html", gin.H{
+        "Rows": rows,
+    })
+})
+
+
+{{range .Rows}}
+<tr>
+    <td>{{.ID}}</td>
+    <td>{{.Value}}</td>
+</tr>
+{{end}}
+```
 
 ### Air
 
