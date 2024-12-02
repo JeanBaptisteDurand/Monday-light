@@ -68,6 +68,23 @@ r.GET("/generate-rows", func(c *gin.Context) {
 {{end}}
 ```
 
+#### Fonction Gin
+
+| Fonction                  | Description                                    |
+|---------------------------|------------------------------------------------|
+| `gin.Default()`           | Initialise un routeur avec middlewares.       |
+| `r.LoadHTMLGlob()`        | Charge des templates HTML depuis un dossier.  |
+| `r.Static()`              | Sert des fichiers statiques.                  |
+| `r.GET()`                 | Crée une route avec la méthode GET.           |
+| `c.HTML()`                | Rendu HTML avec des données dynamiques.       |
+
+#### Syntaxe Template
+
+| Syntaxe                   | Description                                    |
+|---------------------------|------------------------------------------------|
+| `{{ .Key }}`              | Affiche une variable envoyée depuis Gin.       |
+| `{{range .List}} ... {{end}}` | Parcourt une liste et affiche son contenu.    |
+
 ### Air
 
 ```
@@ -149,7 +166,7 @@ Ajoutez le driver PostgreSQL (`github.com/lib/pq`) à votre projet Go en exécut
 go get github.com/lib/pq
 ```
 
-### Chaîne de connexion :
+#### Chaîne de connexion :
 Voici les paramètres principaux pour configurer la connexion à PostgreSQL :
 - **host** : Adresse de votre serveur PostgreSQL.
 - **port** : Port utilisé (par défaut `5432`).
@@ -163,7 +180,7 @@ Voici un exemple de chaîne de connexion :
 host=localhost port=5432 user=yourusername password=yourpassword dbname=yourdatabase sslmode=disable
 ```
 
-### Fonctionnalités principales :
+#### Fonctionnalités principales :
 - **`sql.Open`** : Initialise une connexion à la base de données.
 - **`db.Ping`** : Vérifie que la connexion est valide.
 - **`db.Query`** : Exécute une requête SQL et retourne les résultats.
