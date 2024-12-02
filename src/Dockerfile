@@ -1,15 +1,22 @@
-# Build stage
-FROM golang:1.21 as builder
+FROM golang:1.22
+
 WORKDIR /app
-COPY backend/go.mod backend/go.sum ./ # Ensure these files exist
+
+# Copier les fichiers de configuration
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
-COPY backend/ . # Copy the backend folder
+
+# Copier le code source
+COPY backend/ .
+
+# Copier les fichiers frontend
+COPY frontend/ ./frontend/
+
+# Construire l'application
 RUN go build -o main .
 
-# Runtime stage
-FROM debian:bullseye-slim
-WORKDIR /app
-COPY --from=builder /app/main .
-COPY ./frontend ./frontend # Adjust the path to match the context
+# Exposer le port
 EXPOSE 8080
+
+# Démarrer l'application
 CMD ["./main"]
