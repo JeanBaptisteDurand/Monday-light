@@ -2,8 +2,9 @@ package main
 
 import (
     "monday-light/handlers"
-	"monday-light/models"
     "github.com/gin-gonic/gin"
+	"database/sql"
+    _ "github.com/lib/pq"
 )
 
 func main() {

@@ -2,21 +2,19 @@ FROM golang:1.22
 
 WORKDIR /app
 
-# Copier les fichiers de configuration
+# Install Air for hot reloading
+RUN go install github.com/cosmtrek/air@latest
+
+# Copy configuration files
 COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
-# Copier le code source
-COPY backend/ .
-
-# Copier les fichiers frontend
+# Copy source code
+COPY backend/ ./
 COPY frontend/ ./frontend/
 
-# Construire l'application
-RUN go build -o main .
-
-# Exposer le port
+# Expose the application port
 EXPOSE 8080
 
-# Démarrer l'application
-CMD ["./main"]
+# Run Air for hot reloading
+CMD ["air"]

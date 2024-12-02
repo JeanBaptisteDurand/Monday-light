@@ -2,6 +2,8 @@
 
 ## To do
 
+connexion db
+
 chat sur les taches
 fichiers dans les taches
 account and privilege
