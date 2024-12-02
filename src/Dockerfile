@@ -1,9 +1,9 @@
-FROM golang:1.22
+FROM golang:1.23.3
 
 WORKDIR /app
 
 # Install Air for hot reloading
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/air-verse/air@latest
 
 # Copy configuration files
 COPY backend/go.mod backend/go.sum ./

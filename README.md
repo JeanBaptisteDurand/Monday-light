@@ -19,8 +19,9 @@ faire une vue par status perso des taches
 
 ```
 go mod init monday-light
-go mod tidy
 go get github.com/gin-gonic/gin
+go get github.com/lib/pq
+go mod tidy
 ```
 
 ### HTMX
