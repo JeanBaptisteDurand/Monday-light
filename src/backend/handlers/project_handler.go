@@ -2,6 +2,7 @@ package handlers
 
 import (
     "net/http"
+    "strconv" // For string-to-int conversion
     "monday-light/models"
     "github.com/gin-gonic/gin"
 )
@@ -15,7 +16,13 @@ func ShowDashboard(c *gin.Context) {
 }
 
 func ShowProject(c *gin.Context) {
-    id := c.Param("id")
+    idStr := c.Param("id")
+    id, err := strconv.Atoi(idStr) // Convert string to int
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+        return
+    }
+
     for _, project := range projects {
         if project.ID == id {
             c.HTML(http.StatusOK, "project.html", gin.H{
@@ -39,12 +46,19 @@ func CreateProject(c *gin.Context) {
 }
 
 func AddCategory(c *gin.Context) {
-    id := c.Param("id")
+    idStr := c.Param("id")
+    id, err := strconv.Atoi(idStr) // Convert string to int
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+        return
+    }
+
     var category struct{ Name string }
     if err := c.BindJSON(&category); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
         return
     }
+
     for i, project := range projects {
         if project.ID == id {
             projects[i].Categories = append(project.Categories, category.Name)
