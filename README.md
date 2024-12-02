@@ -12,7 +12,6 @@ go get github.com/gin-gonic/gin
 
 ### HTMX
 
-```
 [
   { "hx-get": "/get-example", "description": "Sends a GET request to fetch data from the server." },
   { "hx-post": "/post-example", "description": "Sends a POST request with data to the server." },
@@ -41,7 +40,6 @@ go get github.com/gin-gonic/gin
   { "hx-preserve": "true", "description": "Preserves the target element instead of replacing it." },
   { "hx-replace-url": "/new-url", "description": "Replaces the current browser URL with the new URL." }
 ]
-```
 
 ### Air
 
@@ -115,23 +113,6 @@ Le fichier `.air.toml` est utilisé pour configurer Air, un outil de rechargemen
   - `"default"` : Schéma par défaut.
   - `"monochrome"` : Désactive les couleurs.
 - **Détails** : Ajuste les couleurs de la sortie en fonction de vos préférences.
-
----
-
-## Exemple de configuration complet
-
-```toml
-[build]
-cmd = "go build -o ./tmp/main ."
-bin = "./tmp/main"
-full_bin = "APP_ENV=dev ./tmp/main"
-include_ext = ["go"]
-exclude_dir = ["vendor", "templates"]
-exclude_file = []
-work_dir = "."
-build_delay = 200
-color_scheme = "default"
-```
 ```
 
 ### PostgreSQL :
