@@ -1,22 +1,21 @@
 package main
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
+    "monday-light/handlers"
+	"monday-light/models"
+    "github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default()
+    r := gin.Default()
+    r.LoadHTMLGlob("templates/*")
+    r.Static("/static", "./frontend/static")
 
-	// Servir les fichiers statiques
-	router.Static("/static", "./frontend")
+    r.GET("/", handlers.ShowDashboard)
+    r.GET("/project/:id", handlers.ShowProject)
+    r.POST("/project", handlers.CreateProject)
+    r.POST("/project/:id/category", handlers.AddCategory)
+    r.POST("/task", handlers.CreateTask)
 
-	// Exemple d'API
-	router.GET("/api/projects", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Liste des projets",
-		})
-	})
-
-	router.Run(":8080") // Port configuré dans le .env
+    r.Run(":8080")
 }

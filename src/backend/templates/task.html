@@ -1,0 +1,13 @@
+<!-- task.html -->
+<tr>
+    <td>{{.Name}}</td>
+    <td>{{.Description}}</td>
+    <td>{{.Category}}</td>
+    <td>{{.Status}}</td>
+    <td>
+      <button class="btn btn-sm btn-primary" hx-post="/task/{{.ID}}/move" hx-vals='{"status": "in_progress"}'>Start</button>
+      <button class="btn btn-sm btn-success" hx-post="/task/{{.ID}}/move" hx-vals='{"status": "completed"}'>Complete</button>
+      <button class="btn btn-sm btn-danger" hx-delete="/task/{{.ID}}" hx-target="#taskList">Delete</button>
+    </td>
+  </tr>
+  

@@ -1,0 +1,30 @@
+{{define "content"}}
+<h1>{{.Project.Name}}</h1>
+<h3>Categories</h3>
+<ul>
+    {{range .Project.Categories}}
+    <li>{{.}}</li>
+    {{end}}
+</ul>
+<form hx-post="/project/{{.Project.ID}}/category" hx-target="this">
+    <input type="text" name="name" placeholder="New Category" required>
+    <button class="btn btn-secondary">Add</button>
+</form>
+
+<h3>Tasks</h3>
+<ul>
+    {{range .Tasks}}
+    <li>{{.Name}} ({{.Category}})</li>
+    {{end}}
+</ul>
+<form hx-post="/task" hx-target="this">
+    <input type="text" name="name" placeholder="Task Name" required>
+    <textarea name="description" placeholder="Description"></textarea>
+    <select name="category">
+        {{range .Project.Categories}}
+        <option value="{{.}}">{{.}}</option>
+        {{end}}
+    </select>
+    <button class="btn btn-success">Create Task</button>
+</form>
+{{end}}

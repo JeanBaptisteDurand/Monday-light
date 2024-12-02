@@ -1,5 +1,16 @@
 # Monday-light
 
+## To do
+
+chat sur les taches
+fichiers dans les taches
+account and privilege
+suppression de categorie
+dashboard avancement du projet ainsi que global (tous les projets)
+faire une vu par categorie dans le projet avec une barre davancement par categorie et sur le projet
+pouvoir creer des sous taches
+faire une vue par status perso des taches
+
 ## Cheat sheet
 
 ### Go Dependencies
