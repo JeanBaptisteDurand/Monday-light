@@ -141,8 +141,3 @@ func AddCategory(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Category added"})
 }
-
-func CreateTask(c *gin.Context) {
-	// Implement the logic to create a task
-	// ...
-}

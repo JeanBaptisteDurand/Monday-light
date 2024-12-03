@@ -17,6 +17,7 @@ pouvoir creer des sous taches
 faire une vue par status perso des taches
 
 connexion via 42 api
+bot discord pour prevenir des notifs
 
 ## Cheat sheet
 
