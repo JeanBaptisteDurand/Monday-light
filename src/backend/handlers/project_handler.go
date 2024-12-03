@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"database/sql"
+	"html/template"
 	"net/http"
 	"strconv"
 
@@ -10,10 +10,40 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Helper function to render templates
+func Render(c *gin.Context, contentTemplate string, data gin.H) {
+	if c.GetHeader("HX-Request") != "" {
+		// Render only the content template for HTMX requests
+		tmpl, err := template.ParseFiles("templates/" + contentTemplate)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		c.Status(http.StatusOK)
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		if err := tmpl.ExecuteTemplate(c.Writer, "content", data); err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+		}
+	} else {
+		// Render base.html with the content template
+		tmpl, err := template.ParseFiles("templates/base.html", "templates/" + contentTemplate)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		c.Status(http.StatusOK)
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		if err := tmpl.ExecuteTemplate(c.Writer, "base", data); err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+		}
+	}
+}
+
 func ShowDashboard(c *gin.Context) {
+	// Load projects from the database
 	rows, err := db.DB.Query("SELECT id, name, categories FROM projects")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		c.String(http.StatusInternalServerError, "Database error")
 		return
 	}
 	defer rows.Close()
@@ -22,44 +52,52 @@ func ShowDashboard(c *gin.Context) {
 	for rows.Next() {
 		var project models.Project
 		if err := rows.Scan(&project.ID, &project.Name, &project.Categories); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to scan projects"})
+			c.String(http.StatusInternalServerError, "Failed to scan projects")
 			return
 		}
 		projects = append(projects, project)
 	}
 
-	c.HTML(http.StatusOK, "index.html", gin.H{
+	data := gin.H{
+		"Title":    "Dashboard",
 		"Projects": projects,
-	})
+	}
+
+	Render(c, "dashboard.html", data)
 }
 
 func ShowProject(c *gin.Context) {
+	// Get project ID from URL
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		c.String(http.StatusBadRequest, "Invalid project ID")
 		return
 	}
 
+	// Fetch project from the database
 	var project models.Project
 	row := db.DB.QueryRow("SELECT id, name, categories FROM projects WHERE id = $1", id)
-	err = row.Scan(&project.ID, &project.Name, &project.Categories)
-	if err == sql.ErrNoRows {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found"})
-		return
-	} else if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+	if err := row.Scan(&project.ID, &project.Name, &project.Categories); err != nil {
+		c.String(http.StatusInternalServerError, "Database error")
 		return
 	}
 
-	c.HTML(http.StatusOK, "project.html", gin.H{
+	// Fetch tasks for the project (assuming you have tasks)
+	// ...
+
+	data := gin.H{
+		"Title":   project.Name,
 		"Project": project,
-	})
+		// "Tasks":   tasks, // Include tasks if available
+	}
+
+	Render(c, "project.html", data)
 }
 
 func CreateProject(c *gin.Context) {
 	var newProject models.Project
-	if err := c.BindJSON(&newProject); err != nil {
+	if err := c.Bind(&newProject); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
@@ -85,9 +123,9 @@ func AddCategory(c *gin.Context) {
 	}
 
 	var category struct {
-		Name string `json:"name"`
+		Name string `form:"name" json:"name" binding:"required"`
 	}
-	if err := c.BindJSON(&category); err != nil {
+	if err := c.Bind(&category); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
@@ -102,4 +140,9 @@ func AddCategory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Category added"})
+}
+
+func CreateTask(c *gin.Context) {
+	// Implement the logic to create a task
+	// ...
 }

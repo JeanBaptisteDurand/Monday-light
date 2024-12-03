@@ -1,30 +1,38 @@
 {{define "content"}}
 <h1>{{.Project.Name}}</h1>
+
 <h3>Categories</h3>
-<ul>
+<ul class="list-group mb-4">
     {{range .Project.Categories}}
-    <li>{{.}}</li>
+    <li class="list-group-item">{{.}}</li>
     {{end}}
 </ul>
-<form hx-post="/project/{{.Project.ID}}/category" hx-target="this">
-    <input type="text" name="name" placeholder="New Category" required>
-    <button class="btn btn-secondary">Add</button>
+<form hx-post="/project/{{.Project.ID}}/category" hx-target="this" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="name" class="form-control" placeholder="New Category" required>
+        <button class="btn btn-secondary">Add Category</button>
+    </div>
 </form>
-
 <h3>Tasks</h3>
-<ul>
+<ul class="list-group mb-4">
     {{range .Tasks}}
-    <li>{{.Name}} ({{.Category}})</li>
+    <li class="list-group-item">{{.Name}} ({{.Category}})</li>
     {{end}}
 </ul>
 <form hx-post="/task" hx-target="this">
-    <input type="text" name="name" placeholder="Task Name" required>
-    <textarea name="description" placeholder="Description"></textarea>
-    <select name="category">
-        {{range .Project.Categories}}
-        <option value="{{.}}">{{.}}</option>
-        {{end}}
-    </select>
+    <div class="mb-3">
+        <input type="text" name="name" class="form-control" placeholder="Task Name" required>
+    </div>
+    <div class="mb-3">
+        <textarea name="description" class="form-control" placeholder="Description"></textarea>
+    </div>
+    <div class="mb-3">
+        <select name="category" class="form-select">
+            {{range .Project.Categories}}
+            <option value="{{.}}">{{.}}</option>
+            {{end}}
+        </select>
+    </div>
     <button class="btn btn-success">Create Task</button>
 </form>
 {{end}}

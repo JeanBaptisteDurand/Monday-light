@@ -1,0 +1,14 @@
+{{define "content"}}
+<h1>Dashboard</h1>
+<form hx-post="/project" hx-target="#projectList" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="name" class="form-control" placeholder="New Project" required>
+        <button class="btn btn-primary">Add</button>
+    </div>
+</form>
+<ul id="projectList" class="list-group">
+    {{range .Projects}}
+    <li class="list-group-item">{{.Name}}</li>
+    {{end}}
+</ul>
+{{end}}

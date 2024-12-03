@@ -2,6 +2,11 @@
 
 ## To do
 
+remettre volume frontend et backend pour que le hot reload soit effectif
+
+sidebar button mit dynamiquement et non fix
+
+
 chat sur les taches
 fichiers dans les taches
 account and privilege

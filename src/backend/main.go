@@ -13,7 +13,7 @@ func main() {
 
 	// Set up the Gin router
 	r := gin.Default()
-	r.LoadHTMLGlob("templates/*")
+	//r.LoadHTMLGlob("templates/*")
 	r.Static("/static", "./frontend/static")
 
 	// Define routes
