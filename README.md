@@ -6,6 +6,12 @@ remettre volume frontend et backend pour que le hot reload soit effectif
 
 sidebar button mit dynamiquement et non fix
 
+changement url et retour en arriere
+
+mvc model
+validation data
+ginkgo gomega
+
 
 chat sur les taches
 fichiers dans les taches
@@ -16,8 +22,12 @@ faire une vu par categorie dans le projet avec une barre davancement par categor
 pouvoir creer des sous taches
 faire une vue par status perso des taches
 
+frontpage avec connexion inscription (page de base pour les non co)
+
 connexion via 42 api
 bot discord pour prevenir des notifs
+swagger
+traefik
 
 ## Cheat sheet
 
