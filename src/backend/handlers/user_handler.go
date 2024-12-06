@@ -3,8 +3,6 @@ package handlers
 import (
     "database/sql"
     "net/http"
-    "os"
-    "strings"
 
     "github.com/gin-gonic/gin"
     "golang.org/x/crypto/bcrypt"
