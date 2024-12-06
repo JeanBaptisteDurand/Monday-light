@@ -2,15 +2,24 @@
 
 ## To do
 
+tache, backlock, startime pour faire real time
+
+mdp hacher avant envoie de front a back ?
+
 remettre volume frontend et backend pour que le hot reload soit effectif
 
 sidebar button mit dynamiquement et non fix
 
 changement url et retour en arriere
+test preload template (preload login et register en standalone au debut)
 
 mvc model
-validation data
+validation data !!!!!
 ginkgo gomega
+
+avoir un dashboard user avec leur tache prise
+
+confirm password when registering
 
 
 chat sur les taches

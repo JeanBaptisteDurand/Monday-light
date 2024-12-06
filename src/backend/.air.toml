@@ -2,5 +2,5 @@
 cmd = "go build -o ./tmp/main ."
 bin = "./tmp/main"
 include_ext = ["go", "html", "css", "js"]
-exclude_dir = ["frontend/static"]
+exclude_dir = [""]
 build_delay = 200

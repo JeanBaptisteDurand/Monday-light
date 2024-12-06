@@ -11,7 +11,6 @@ RUN go mod download
 
 # Copy source code
 COPY backend/ ./
-COPY frontend/ ./frontend/
 
 # Expose the application port
 EXPOSE 8080
