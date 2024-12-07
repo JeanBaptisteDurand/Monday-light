@@ -40,30 +40,41 @@ func Render(c *gin.Context, contentTemplate string, data gin.H) {
 }
 
 func ShowDashboard(c *gin.Context) {
-	// Load projects from the database
-	rows, err := db.DB.Query("SELECT id, name, categories FROM projects")
-	if err != nil {
-		c.String(http.StatusInternalServerError, "Database error")
-		return
-	}
-	defer rows.Close()
+    userIDVal, _ := c.Get("userID")
+    userID := userIDVal.(int)
 
-	var projects []models.Project
-	for rows.Next() {
-		var project models.Project
-		if err := rows.Scan(&project.ID, &project.Name, &project.Categories); err != nil {
-			c.String(http.StatusInternalServerError, "Failed to scan projects")
-			return
-		}
-		projects = append(projects, project)
-	}
+    // Get user's username
+    var username string
+    err := db.DB.QueryRow("SELECT username FROM users WHERE id = $1", userID).Scan(&username)
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Database error")
+        return
+    }
 
-	data := gin.H{
-		"Title":    "Dashboard",
-		"Projects": projects,
-	}
+    rows, err := db.DB.Query("SELECT id, name, categories FROM projects")
+    if err != nil {
+        c.String(http.StatusInternalServerError, "Database error")
+        return
+    }
+    defer rows.Close()
 
-	Render(c, "dashboard.html", data)
+    var projects []models.Project
+    for rows.Next() {
+        var project models.Project
+        if err := rows.Scan(&project.ID, &project.Name, &project.Categories); err != nil {
+            c.String(http.StatusInternalServerError, "Failed to scan projects")
+            return
+        }
+        projects = append(projects, project)
+    }
+
+    data := gin.H{
+        "Title":    "Dashboard",
+        "Projects": projects,
+        "Username": username, // now we have a username to display
+    }
+
+    Render(c, "dashboard.html", data)
 }
 
 func ShowProject(c *gin.Context) {

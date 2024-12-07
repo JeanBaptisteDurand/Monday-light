@@ -1,0 +1,95 @@
+{{define "content"}}
+<div class="container mt-4">
+    <h2 class="mb-4">
+        <i class="bi bi-gear me-2 text-secondary"></i> Paramètres Utilisateur
+    </h2>
+    <div id="param-feedback"></div>
+    <div class="card">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">Nom d'utilisateur</dt>
+                <dd class="col-sm-8 d-flex justify-content-between align-items-center" id="username-field">
+                    <span>{{.User.Username}}</span>
+                    <i class="bi bi-pencil-square text-info"
+                       style="cursor:pointer;"
+                       hx-get="/param/edit?field=username"
+                       hx-target="#username-field"
+                       hx-swap="outerHTML"></i>
+                </dd>
+
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8 d-flex justify-content-between align-items-center" id="email-field">
+                    <span>{{.User.Email}}</span>
+                    <i class="bi bi-pencil-square text-info"
+                       style="cursor:pointer;"
+                       hx-get="/param/edit?field=email"
+                       hx-target="#email-field"
+                       hx-swap="outerHTML"></i>
+                </dd>
+
+                <dt class="col-sm-4">Discord ID</dt>
+                <dd class="col-sm-8 d-flex justify-content-between align-items-center" id="discord_id-field">
+                    <span>{{.User.DiscordID}}</span>
+                    <i class="bi bi-pencil-square text-info"
+                       style="cursor:pointer;"
+                       hx-get="/param/edit?field=discord_id"
+                       hx-target="#discord_id-field"
+                       hx-swap="outerHTML"></i>
+                </dd>
+
+                <dt class="col-sm-4">Discord Pseudo</dt>
+                <dd class="col-sm-8 d-flex justify-content-between align-items-center" id="discord_pseudo-field">
+                    <span>{{.User.DiscordPseudo}}</span>
+                    <i class="bi bi-pencil-square text-info"
+                       style="cursor:pointer;"
+                       hx-get="/param/edit?field=discord_pseudo"
+                       hx-target="#discord_pseudo-field"
+                       hx-swap="outerHTML"></i>
+                </dd>
+
+                <dt class="col-sm-4">Mot de passe</dt>
+                <dd class="col-sm-8 d-flex justify-content-between align-items-center" id="password-field">
+                    <span>********</span>
+                    <i class="bi bi-pencil-square text-info"
+                       style="cursor:pointer;"
+                       hx-get="/param/edit?field=password"
+                       hx-target="#password-field"
+                       hx-swap="outerHTML"></i>
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show success message when paramSuccess is triggered
+    htmx.on('paramSuccess', function() {
+        const feedback = document.getElementById('param-feedback');
+        feedback.innerHTML = '<div class="alert alert-success">Mise à jour réussie !</div>';
+        setTimeout(() => { feedback.innerHTML = ''; }, 3000);
+    });
+
+    // Show popup then reload for pseudoSuccess
+    htmx.on('pseudoSuccess', function() {
+        alert("Pseudo modifié avec succès !");
+        location.reload();
+    });
+
+    // Handle 401 globally using afterRequest event
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.xhr.status === 401) {
+            // 401 means wrong old password
+            var pwdField = document.querySelector('#password-field form');
+            if (pwdField) {
+                var existingError = pwdField.querySelector('.text-danger');
+                if (!existingError) {
+                    var errorDiv = document.createElement('div');
+                    errorDiv.classList.add('text-danger', 'mb-2');
+                    errorDiv.textContent = 'Ancien mot de passe incorrect.';
+                    pwdField.insertBefore(errorDiv, pwdField.firstChild);
+                }
+            }
+        }
+    });
+</script>
+{{end}}

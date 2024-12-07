@@ -35,6 +35,11 @@ func main() {
         authorized.POST("/project", handlers.CreateProject)
         authorized.POST("/project/:id/category", handlers.AddCategory)
         authorized.POST("/task", handlers.CreateTask)
+		authorized.GET("/recap", handlers.ShowRecap)
+		authorized.GET("/param", handlers.ShowParam)
+		authorized.GET("/logout", handlers.Logout)
+		authorized.GET("/param/edit", handlers.ShowParamEdit)
+		authorized.POST("/param/update", handlers.UpdateParam)
     }
 
     port := os.Getenv("PORT")
