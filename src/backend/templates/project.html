@@ -2,7 +2,7 @@
 <h2>{{.Project.Name}}</h2>
 
 <h4>Catégories</h4>
-<div id="project-categories" hx-get="/project/{{.Project.ID}}" hx-trigger="load" hx-target="#project-categories" hx-swap="outerHTML">
+<div id="project-categories" hx-get="/project/{{.Project.ID}}" hx-trigger="load" hx-target="#project-categories" hx-swap="outerHTML" hx-on="htmx:responseError alert('HTMX Error: ' + event.detail.xhr.responseText)">
     {{/* On va recharger ce bloc via RenderCategories, donc on le place dans un template séparé. 
         Mais ici, on va juste l'inclure directement au premier load. */}}
     {{template "project_categories" .}}

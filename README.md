@@ -2,6 +2,11 @@
 
 ## To do
 
+changer front creation project (categorie de base)
+bug recursif appel pour un project
+
+
+
 random color per user they cant change
 dropdown menu for categorie, add base categorie
 remettre dossier frontend dans le containeur pour la distribution de fichier statique
