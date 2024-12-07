@@ -3,7 +3,13 @@
 ## To do
 
 changer front creation project (categorie de base)
-quand je load la page, jai pas les projets dans la sidebar, mais apres avoir creer un projet, je lai ai tous
+faire les tasks
+
+design vertical pour les tables
+
+plus de champ a ajouter une tache
+
+
 
 
 random color per user they cant change
