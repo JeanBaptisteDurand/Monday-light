@@ -3,10 +3,12 @@ package handlers
 import (
 	"html/template"
 	"net/http"
+	"log"
 
 	"monday-light/db"
 	"monday-light/models"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
 
 func RenderP(c *gin.Context, contentTemplate string, data gin.H) {
@@ -80,13 +82,16 @@ func ShowDashboard(c *gin.Context) {
     var username string
     err := db.DB.QueryRow("SELECT username FROM users WHERE id = $1", userID).Scan(&username)
     if err != nil {
-        c.String(http.StatusInternalServerError, "Database error")
+        c.String(http.StatusInternalServerError, "Database error: failed to fetch username")
+        log.Printf("Error fetching username for userID=%d: %v", userID, err)
         return
     }
 
+    // Fetch projects from the database
     rows, err := db.DB.Query("SELECT id, name, categories FROM projects")
     if err != nil {
-        c.String(http.StatusInternalServerError, "Database error")
+        c.String(http.StatusInternalServerError, "Database error: failed to fetch projects")
+        log.Printf("Error querying projects: %v", err)
         return
     }
     defer rows.Close()
@@ -94,18 +99,35 @@ func ShowDashboard(c *gin.Context) {
     var projects []models.Project
     for rows.Next() {
         var project models.Project
-        if err := rows.Scan(&project.ID, &project.Name, &project.Categories); err != nil {
+        var categories pq.StringArray // Use pq.StringArray to scan the array field
+
+        // Scan the project row
+        if err := rows.Scan(&project.ID, &project.Name, &categories); err != nil {
+            log.Printf("Error scanning project row: %v", err)
+            log.Printf("Row data -> ID: %v, Name: %v, Categories: %v", project.ID, project.Name, categories)
             c.String(http.StatusInternalServerError, "Failed to scan projects")
             return
         }
+
+        // Assign categories to the project and add to the list
+        project.Categories = categories
         projects = append(projects, project)
     }
 
+    // Check for iteration errors
+    if err := rows.Err(); err != nil {
+        log.Printf("Error iterating rows: %v", err)
+        c.String(http.StatusInternalServerError, "Error iterating over project rows")
+        return
+    }
+
+    // Prepare data for the template
     data := gin.H{
         "Title":    "Dashboard",
         "Projects": projects,
-        "Username": username, // now we have a username to display
+        "Username": username, // Include username for rendering
     }
 
+    // Render the dashboard
     Render(c, "dashboard.html", data)
 }

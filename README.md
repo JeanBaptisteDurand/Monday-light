@@ -3,8 +3,7 @@
 ## To do
 
 changer front creation project (categorie de base)
-bug recursif appel pour un project
-
+quand je load la page, jai pas les projets dans la sidebar, mais apres avoir creer un projet, je lai ai tous
 
 
 random color per user they cant change
