@@ -2,18 +2,24 @@
 
 ## To do
 
+random color per user they cant change
+dropdown menu for categorie, add base categorie
+remettre dossier frontend dans le containeur pour la distribution de fichier statique
+
+task db name from available_from to taken_from
+
+enlever dans Render le cas special pour projects.html en remplacant ca par une fonction variatique
+
+
 do i check if the account exist when checking jwt ????
 
 faire du trie dans les fichiers html et go
 proteger route individuel comme modif de compte
 
-tache, backlock, startime pour faire real time
 
 mdp hacher avant envoie de front a back ?
 
 remettre volume backend pour que le hot reload soit effectif
-
-sidebar button mit dynamiquement et non fix
 
 changement url et retour en arriere et refresh
 test preload template (preload login et register en standalone au debut)
@@ -27,7 +33,6 @@ avoir un dashboard user avec leur tache prise
 
 chat sur les taches
 fichiers dans les taches
-account and privilege
 suppression de categorie
 dashboard avancement du projet ainsi que global (tous les projets)
 faire une vu par categorie dans le projet avec une barre davancement par categorie et sur le projet
@@ -42,6 +47,15 @@ swagger
 traefik
 
 bonne balise html de navigation
+
+
+BUG : si token avec id inconnue, db error
+
+## to do pour page param
+
+plus jolie pop pour le changement de username
+icon modify qui se decale apres un update reussit
+afficher le succes du changement de mdp
 
 ## Cheat sheet
 

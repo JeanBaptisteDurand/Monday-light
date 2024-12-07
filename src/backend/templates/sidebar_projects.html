@@ -1,0 +1,11 @@
+{{define "sidebar_projects"}}
+<ul class="list-group">
+    {{range .Projects}}
+    <li class="list-group-item">
+      <a href="/project/{{.ID}}" hx-get="/project/{{.ID}}" hx-target="#content">
+        {{.Name}}
+      </a>
+    </li>
+    {{end}}
+</ul>
+{{end}}

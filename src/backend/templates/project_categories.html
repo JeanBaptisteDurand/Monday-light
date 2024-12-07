@@ -1,0 +1,22 @@
+{{define "project_categories"}}
+<div>
+    {{range .Categories}}
+    <span class="badge bg-info text-dark category-badge">
+        {{.}}
+        <i class="bi bi-x-circle ms-1"
+           style="cursor:pointer;"
+           hx-post="/project/{{.ProjectID}}/category/remove"
+           hx-vals='{"cat":"{{.}}"}'
+           hx-target="#project-categories"
+           hx-swap="outerHTML"></i>
+    </span>
+    {{end}}
+</div>
+<form hx-post="/project/{{.ProjectID}}/category"
+      hx-target="#project-categories"
+      hx-swap="outerHTML"
+      class="mt-2 d-flex" style="max-width:250px;">
+    <input type="text" name="category_name" class="form-control form-control-sm me-2" placeholder="Nouvelle catégorie" required>
+    <button class="btn btn-success btn-sm"><i class="bi bi-plus"></i></button>
+</form>
+{{end}}

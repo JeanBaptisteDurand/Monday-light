@@ -23,12 +23,8 @@ CREATE TABLE IF NOT EXISTS tasks (
     estimated_time INT DEFAULT 0,
     real_time INT DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    available_from TIMESTAMP
+    taken_from TIMESTAMP
 );
-
---move created at to the backlocks table
-
---need to add backlogs and done tasks
 
 -- Table de liaison pour relation many-to-many entre users et tasks
 CREATE TABLE IF NOT EXISTS user_tasks (

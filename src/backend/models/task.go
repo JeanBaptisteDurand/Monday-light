@@ -13,5 +13,5 @@ type Task struct {
     EstimatedTime int       `json:"estimated_time"`
     RealTime      int       `json:"real_time"`
     CreatedAt     time.Time `json:"created_at"`
-    AvailableFrom time.Time `json:"available_from"`
+    TakenFrom time.Time `json:"taken_from"`
 }
