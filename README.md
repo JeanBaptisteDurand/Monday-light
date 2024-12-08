@@ -2,6 +2,8 @@
 
 ## To do
 
+adminer
+
 changer front creation project (categorie de base)
 faire les tasks
 
@@ -9,7 +11,7 @@ design vertical pour les tables
 
 plus de champ a ajouter une tache
 
-
+creation de la tache ainsi que visu de la tache dans un pop up
 
 
 random color per user they cant change
@@ -66,6 +68,42 @@ BUG : si token avec id inconnue, db error
 plus jolie pop pour le changement de username
 icon modify qui se decale apres un update reussit
 afficher le succes du changement de mdp
+
+## revoir logique spa et srr
+
+passer dun parse a chaque requette -> a un modele avec plus de template mais sans reparse
+
+{{ define "header" }}
+<header>
+    <h1>Mon Header</h1>
+</header>
+{{ end }}
+
+{{ define "content1" }}
+<div>
+    <p>Contenu de la première page</p>
+</div>
+{{ end }}
+
+{{ define "content2" }}
+<div>
+    <p>Contenu de la deuxième page</p>
+</div>
+{{ end }}
+
+{{ define "layout" }}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mon Site</title>
+</head>
+<body>
+    {{ template "header" . }}
+    {{ template "content" . }}
+</body>
+</html>
+{{ end }}
+
 
 ## Cheat sheet
 
