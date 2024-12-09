@@ -2,9 +2,8 @@
 
 ## To do
 
-adminer
-
-changer front creation project (categorie de base)
+changer front creation project
+cote back rajouter des categorie de base
 faire les tasks
 
 design vertical pour les tables
@@ -15,30 +14,16 @@ creation de la tache ainsi que visu de la tache dans un pop up
 
 
 random color per user they cant change
-dropdown menu for categorie, add base categorie
-remettre dossier frontend dans le containeur pour la distribution de fichier statique
+dropdown menu for categorie in a task
+
 
 task db name from available_from to taken_from
 
-enlever dans Render le cas special pour projects.html en remplacant ca par une fonction variatique
-
-
-do i check if the account exist when checking jwt ????
 
 faire du trie dans les fichiers html et go
 proteger route individuel comme modif de compte
 
-
-mdp hacher avant envoie de front a back ?
-
-remettre volume backend pour que le hot reload soit effectif
-
 changement url et retour en arriere et refresh
-test preload template (preload login et register en standalone au debut)
-
-mvc model
-validation data !!!!!
-ginkgo gomega
 
 avoir un dashboard user avec leur tache prise
 
@@ -51,14 +36,18 @@ faire une vu par categorie dans le projet avec une barre davancement par categor
 pouvoir creer des sous taches
 faire une vue par status perso des taches
 
-frontpage avec connexion inscription (page de base pour les non co)
-
 connexion via 42 api
 bot discord pour prevenir des notifs
 swagger
 traefik
-
+mvc model
+validation data !!!!!
+ginkgo gomega
 bonne balise html de navigation
+
+
+do i check if the account exist when checking jwt ????
+mdp hacher avant envoie de front a back ?
 
 
 BUG : si token avec id inconnue, db error
@@ -72,6 +61,8 @@ afficher le succes du changement de mdp
 ## revoir logique spa et srr
 
 passer dun parse a chaque requette -> a un modele avec plus de template mais sans reparse
+
+peut etre dactu ou pas (enlever dans Render le cas special pour projects.html en remplacant ca par une fonction variatique)
 
 {{ define "header" }}
 <header>
