@@ -10,7 +10,7 @@ COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
 # Copy source code
-COPY backend/ ./
+# COPY backend/ ./
 
 # Expose the application port
 EXPOSE 8080
