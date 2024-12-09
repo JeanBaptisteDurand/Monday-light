@@ -64,6 +64,10 @@ passer dun parse a chaque requette -> a un modele avec plus de template mais san
 
 peut etre dactu ou pas (enlever dans Render le cas special pour projects.html en remplacant ca par une fonction variatique)
 
+pour lajout ou la suppresion delement en direct
+https://youtu.be/To-Mlm2AwD4?si=Wq2osxv2laQAy1mF
+https://youtu.be/To-Mlm2AwD4?si=pJdAwja2CFuuMOF2
+
 {{ define "header" }}
 <header>
     <h1>Mon Header</h1>
@@ -94,6 +98,11 @@ peut etre dactu ou pas (enlever dans Render le cas special pour projects.html en
 </body>
 </html>
 {{ end }}
+
+# readme a ajouter
+connection jwt
+mdp hasher
+spa ssr
 
 ## Cheat sheet
 

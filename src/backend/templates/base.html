@@ -65,10 +65,12 @@
         <div class="d-flex justify-content-between align-items-center px-3 pb-2">
           <strong>Projets</strong>
           <a href="#" 
-             hx-get="/show-new-project-form"
-             hx-target="#sidebar"
-             hx-swap="afterend">
-             <i class="bi bi-plus-circle" style="cursor:pointer;"></i>
+            hx-get="/show-new-project-form"
+            hx-target="body"
+            hx-swap="beforeend"
+            data-bs-toggle="modal"
+            data-bs-target="#newProjectModal">
+            <i class="bi bi-plus-circle" style="cursor:pointer;"></i>
           </a>
         </div>
         <div id="project-list-container">

@@ -160,16 +160,27 @@ func RenderProjectList(c *gin.Context) {
     }
 }
 
-// ShowNewProjectForm displays a form for adding a new project.
 func ShowNewProjectForm(c *gin.Context) {
 	c.String(http.StatusOK, `
-    <div class="px-3 py-2">
-        <form hx-post="/project" hx-target="#project-list-container" hx-swap="innerHTML">
-            <div class="input-group input-group-sm mb-2">
-                <input type="text" name="name" class="form-control" placeholder="Nom du projet" required>
-                <button class="btn btn-primary">Créer</button>
+    <div class="modal fade" id="newProjectModal" tabindex="-1" aria-labelledby="newProjectModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newProjectModalLabel">Créer un projet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form hx-post="/project" hx-target="#project-list-container" hx-swap="innerHTML">
+                        <div class="mb-3">
+                            <input type="text" name="name" class="form-control" placeholder="Nom du projet" required>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Créer</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
     `)
 }
