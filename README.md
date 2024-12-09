@@ -2,9 +2,8 @@
 
 ## To do
 
-
-cote back rajouter des categorie de base
-gerer display et ajout de tag cote front
+### 1
+gerer display et ajout et delete de tag cote front
 
 
 faire les tasks
@@ -17,12 +16,7 @@ bar de progression dans le temps reel (front) calculer a partir de taken from
 
 avoir un dashboard user avec leur tache prise
 
-
-faire du trie dans les fichiers html et go
-proteger route individuel comme modif de compte
-changement url et retour en arriere et refresh
-
-
+### 2
 chat sur les taches
 fichiers dans les taches
 suppression de categorie
@@ -31,6 +25,14 @@ faire une vu par categorie
 pouvoir creer des sous taches
 faire une vue par status perso des taches
 
+### 3
+
+faire du trie dans les fichiers html et go
+proteger route individuel comme modif de compte
+changement url et retour en arriere et refresh
+gros boulot de front
+
+### 4
 
 connexion via 42 api
 bot discord pour prevenir des notifs
