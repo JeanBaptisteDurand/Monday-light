@@ -7,4 +7,5 @@ type User struct {
     PasswordHash  string `json:"-"`
     DiscordID     string `json:"discord_id"`
     DiscordPseudo string `json:"discord_pseudo"`
+    Color         string `json:"color"`
 }

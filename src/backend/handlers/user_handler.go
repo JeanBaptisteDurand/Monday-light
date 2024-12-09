@@ -1,16 +1,68 @@
 package handlers
 
 import (
-    "database/sql"
-    "net/http"
+	"database/sql"
+	"fmt"
+	"math/rand"
+	"net/http"
+	"time"
 
-    "github.com/gin-gonic/gin"
-    "golang.org/x/crypto/bcrypt"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 
-    "html/template"
-    "monday-light/db"
-    "monday-light/models"
+	"html/template"
+	"monday-light/db"
+	"monday-light/models"
 )
+
+// Predefined colors for users
+var predefinedColors = []string{
+	"#FF5733", "#33FF57", "#3357FF", "#F3FF33",
+	"#FF33F6", "#33FFF6", "#F633FF", "#FFC300",
+	"#FF5733", "#DAF7A6",
+}
+
+// Get used colors from the database
+func getUsedColors() ([]string, error) {
+	rows, err := db.DB.Query("SELECT DISTINCT color FROM users WHERE color IS NOT NULL")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var usedColors []string
+	for rows.Next() {
+		var color string
+		if err := rows.Scan(&color); err != nil {
+			return nil, err
+		}
+		usedColors = append(usedColors, color)
+	}
+	return usedColors, nil
+}
+
+// Get a random unused color
+func getRandomUnusedColor() (string, error) {
+	usedColors, err := getUsedColors()
+	if err != nil {
+		return "", err
+	}
+
+	usedColorsMap := make(map[string]bool)
+	for _, color := range usedColors {
+		usedColorsMap[color] = true
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	shuffledColors := rand.Perm(len(predefinedColors))
+	for _, i := range shuffledColors {
+		if !usedColorsMap[predefinedColors[i]] {
+			return predefinedColors[i], nil
+		}
+	}
+
+	return "", fmt.Errorf("no colors available")
+}
 
 // RenderStandalone loads and executes a single template without "content" block
 func RenderStandalone(c *gin.Context, filename string, data gin.H) {
@@ -63,10 +115,6 @@ func Register(c *gin.Context) {
         return
     }
 
-    // Check password confirmation via JS on frontend, but if needed, can verify again here:
-    // Not provided in form since "password_confirm" is not posted to server, 
-    // front-end ensures they match.
-
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
     if err != nil {
         if c.GetHeader("HX-Request") != "" {
@@ -78,11 +126,17 @@ func Register(c *gin.Context) {
         return
     }
 
+    color, err := getRandomUnusedColor()
+	if err != nil {
+		c.String(http.StatusInternalServerError, "No colors available")
+		return
+	}
+
     var userID int
     err = db.DB.QueryRow(`
-        INSERT INTO users (username, email, password_hash, discord_id, discord_pseudo)
-        VALUES ($1, $2, $3, $4, $5) RETURNING id
-    `, input.Username, input.Email, string(hashedPassword), input.DiscordID, input.DiscordPseudo).Scan(&userID)
+        INSERT INTO users (username, email, password_hash, discord_id, discord_pseudo, color)
+        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+        `, input.Username, input.Email, string(hashedPassword), input.DiscordID, input.DiscordPseudo, color).Scan(&userID)
     if err != nil {
         if c.GetHeader("HX-Request") != "" {
             // Possibly email or username already taken

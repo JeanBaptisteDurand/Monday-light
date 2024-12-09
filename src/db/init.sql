@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     discord_id VARCHAR(255),
-    discord_pseudo VARCHAR(255)
+    discord_pseudo VARCHAR(255),
+    color VARCHAR(7) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS projects (
@@ -26,7 +27,6 @@ CREATE TABLE IF NOT EXISTS tasks (
     taken_from TIMESTAMP
 );
 
--- Table de liaison pour relation many-to-many entre users et tasks
 CREATE TABLE IF NOT EXISTS user_tasks (
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     task_id INT REFERENCES tasks(id) ON DELETE CASCADE,

@@ -19,8 +19,11 @@ func ShowParam(c *gin.Context) {
     userID := userIDVal.(int)
 
     var user models.User
-    err := db.DB.QueryRow(`SELECT id, username, email, discord_id, discord_pseudo FROM users WHERE id=$1`, userID).
-        Scan(&user.ID, &user.Username, &user.Email, &user.DiscordID, &user.DiscordPseudo)
+    err := db.DB.QueryRow(`
+        SELECT id, username, email, discord_id, discord_pseudo, color 
+        FROM users 
+        WHERE id=$1
+    `, userID).Scan(&user.ID, &user.Username, &user.Email, &user.DiscordID, &user.DiscordPseudo, &user.Color)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to load user info")
         return
@@ -30,7 +33,7 @@ func ShowParam(c *gin.Context) {
         "User":     user,
         "Username": user.Username,
         "Title":    "Paramètres",
-    }    
+    }
 
     Render(c, "param.html", data)
 }

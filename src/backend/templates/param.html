@@ -56,6 +56,11 @@
                        hx-target="#password-field"
                        hx-swap="outerHTML"></i>
                 </dd>
+
+                <dt class="col-sm-4">Couleur de l'utilisateur</dt>
+                <dd class="col-sm-8 d-flex align-items-center">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background-color: {{.User.Color}}; border: 1px solid #ccc;" title="Votre couleur"></div>
+                </dd>
             </dl>
         </div>
     </div>
@@ -78,7 +83,6 @@
     // Handle 401 globally using afterRequest event
     document.body.addEventListener('htmx:afterRequest', function(evt) {
         if (evt.detail.xhr.status === 401) {
-            // 401 means wrong old password
             var pwdField = document.querySelector('#password-field form');
             if (pwdField) {
                 var existingError = pwdField.querySelector('.text-danger');

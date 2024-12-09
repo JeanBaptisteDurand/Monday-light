@@ -2,7 +2,9 @@
 
 ## To do
 
-changer front creation project
+task db name from available_from to taken_from
+random color per user they cant change
+
 cote back rajouter des categorie de base
 faire les tasks
 
@@ -12,16 +14,14 @@ plus de champ a ajouter une tache
 
 creation de la tache ainsi que visu de la tache dans un pop up
 
-
-random color per user they cant change
 dropdown menu for categorie in a task
 
-
-task db name from available_from to taken_from
 
 
 faire du trie dans les fichiers html et go
 proteger route individuel comme modif de compte
+
+
 
 changement url et retour en arriere et refresh
 
@@ -67,6 +67,12 @@ peut etre dactu ou pas (enlever dans Render le cas special pour projects.html en
 pour lajout ou la suppresion delement en direct
 https://youtu.be/To-Mlm2AwD4?si=Wq2osxv2laQAy1mF
 https://youtu.be/To-Mlm2AwD4?si=pJdAwja2CFuuMOF2
+
+
+very slow cause i parse at each request
+bien expliquer le design actuel et comment devrait etre le bon design
+
+
 
 {{ define "header" }}
 <header>
