@@ -26,5 +26,13 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./src/db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
 volumes:
   postgres_data:

@@ -104,7 +104,6 @@ passer dun parse a chaque requette -> a un modele avec plus de template mais san
 </html>
 {{ end }}
 
-
 ## Cheat sheet
 
 ### Go Dependencies
