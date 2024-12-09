@@ -2,39 +2,35 @@
 
 ## To do
 
-task db name from available_from to taken_from
-random color per user they cant change
 
 cote back rajouter des categorie de base
+gerer display et ajout de tag cote front
+
+
 faire les tasks
-
 design vertical pour les tables
-
 plus de champ a ajouter une tache
-
 creation de la tache ainsi que visu de la tache dans un pop up
-
 dropdown menu for categorie in a task
+bar de progression dans le temps reel (front) calculer a partir de taken from
 
+
+avoir un dashboard user avec leur tache prise
 
 
 faire du trie dans les fichiers html et go
 proteger route individuel comme modif de compte
-
-
-
 changement url et retour en arriere et refresh
-
-avoir un dashboard user avec leur tache prise
 
 
 chat sur les taches
 fichiers dans les taches
 suppression de categorie
 dashboard avancement du projet ainsi que global (tous les projets)
-faire une vu par categorie dans le projet avec une barre davancement par categorie et sur le projet
+faire une vu par categorie
 pouvoir creer des sous taches
 faire une vue par status perso des taches
+
 
 connexion via 42 api
 bot discord pour prevenir des notifs

@@ -89,7 +89,7 @@ func ShowProject(c *gin.Context) {
 	RenderP(c, "project.html", data)
 }
 
-// CreateProject creates a new project.
+// CreateProject creates a new project with default categories.
 func CreateProject(c *gin.Context) {
 	name := c.PostForm("name")
 	if strings.TrimSpace(name) == "" {
@@ -98,16 +98,24 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
+	// Liste des catégories par défaut
+	defaultCategories := []string{
+		"high priority", "mid priority", "low priority", 
+		"urgent", "Frontend", "Backend", 
+		"RDV", "Communication", "Marketing", "Design",
+	}
+
 	var projectID int
-	query := "INSERT INTO projects (name) VALUES ($1) RETURNING id"
-	log.Printf("Executing query: %s with name=%s", query, name)
-	err := db.DB.QueryRow(query, name).Scan(&projectID)
+	query := "INSERT INTO projects (name, categories) VALUES ($1, $2) RETURNING id"
+	log.Printf("Executing query: %s with name=%s and default categories", query, name)
+	err := db.DB.QueryRow(query, name, pq.Array(defaultCategories)).Scan(&projectID)
 	if err != nil {
 		log.Printf("Error creating project: %v", err)
 		c.String(http.StatusInternalServerError, "Database error (create project)")
 		return
 	}
 
+	log.Printf("Project created with ID %d and default categories", projectID)
 	RenderProjectList(c)
 }
 
