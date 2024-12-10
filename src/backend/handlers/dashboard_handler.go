@@ -11,40 +11,6 @@ import (
 	"github.com/lib/pq"
 )
 
-func RenderP(c *gin.Context, contentTemplate string, data gin.H) {
-    if c.GetHeader("HX-Request") != "" {
-        tmpl, err := template.ParseFiles(
-            "templates/"+contentTemplate,
-            "templates/project_categories.html",
-        )
-        if err != nil {
-            c.String(http.StatusInternalServerError, err.Error())
-            return
-        }
-        c.Status(http.StatusOK)
-        c.Header("Content-Type", "text/html; charset=utf-8")
-        if err := tmpl.ExecuteTemplate(c.Writer, "content", data); err != nil {
-            c.String(http.StatusInternalServerError, err.Error())
-        }
-    } else {
-        tmpl, err := template.ParseFiles(
-            "templates/base.html",
-            "templates/"+contentTemplate,
-            "templates/sidebar_projects.html",
-            "templates/project_categories.html",
-        )
-        if err != nil {
-            c.String(http.StatusInternalServerError, err.Error())
-            return
-        }
-        c.Status(http.StatusOK)
-        c.Header("Content-Type", "text/html; charset=utf-8")
-        if err := tmpl.ExecuteTemplate(c.Writer, "base", data); err != nil {
-            c.String(http.StatusInternalServerError, err.Error())
-        }
-    }
-}
-
 // Helper function to render templates
 func Render(c *gin.Context, contentTemplate string, data gin.H) {
 	if c.GetHeader("HX-Request") != "" {

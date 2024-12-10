@@ -34,19 +34,19 @@
     <!-- Header -->
     <header class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/" hx-get="/" hx-target="#content">Monday-light</a>
+            <a class="navbar-brand" href="/" hx-get="/" hx-target="#content" hx-swap="innerHTML" hx-push-url="false">Monday-light</a>
             <div class="dropdown ms-auto">
               <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person-circle me-2"></i> {{.Username}}
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                  <a class="dropdown-item d-flex align-items-center" href="#" hx-get="/recap" hx-target="#content">
+                  <a class="dropdown-item d-flex align-items-center" href="#" hx-get="/recap" hx-target="#content" hx-swap="innerHTML" hx-push-url="false">
                     <i class="bi bi-list-check me-2 text-primary"></i> Recap
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item d-flex align-items-center" href="#" hx-get="/param" hx-target="#content">
+                  <a class="dropdown-item d-flex align-items-center" href="#" hx-get="/param" hx-target="#content" hx-swap="innerHTML" hx-push-url="false">
                     <i class="bi bi-gear me-2 text-secondary"></i> Paramètres
                   </a>
                 </li>

@@ -7,11 +7,49 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lib/pq"
 	"monday-light/db"
 	"monday-light/models"
+
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
+
+// RenderP chooses the template rendering strategy depending on HTMX request or not.
+func RenderP(c *gin.Context, contentTemplate string, data gin.H) {
+    if c.GetHeader("HX-Request") != "" {
+        // HTMX request: parse only content template (and related partials)
+        tmpl, err := template.ParseFiles(
+            "templates/"+contentTemplate,
+            "templates/project_categories.html",
+        )
+        if err != nil {
+            c.String(http.StatusInternalServerError, err.Error())
+            return
+        }
+        c.Status(http.StatusOK)
+        c.Header("Content-Type", "text/html; charset=utf-8")
+        if err := tmpl.ExecuteTemplate(c.Writer, "content", data); err != nil {
+            c.String(http.StatusInternalServerError, err.Error())
+        }
+    } else {
+        // Normal request: parse base layout + sidebar + partials
+        tmpl, err := template.ParseFiles(
+            "templates/base.html",
+            "templates/"+contentTemplate,
+            "templates/sidebar_projects.html",
+            "templates/project_categories.html",
+        )
+        if err != nil {
+            c.String(http.StatusInternalServerError, err.Error())
+            return
+        }
+        c.Status(http.StatusOK)
+        c.Header("Content-Type", "text/html; charset=utf-8")
+        if err := tmpl.ExecuteTemplate(c.Writer, "base", data); err != nil {
+            c.String(http.StatusInternalServerError, err.Error())
+        }
+    }
+}
 
 // ShowProject displays a project page with its categories and tasks.
 func ShowProject(c *gin.Context) {
@@ -98,10 +136,10 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
-	// Liste des catégories par défaut
+	// Default categories
 	defaultCategories := []string{
-		"high priority", "mid priority", "low priority", 
-		"urgent", "Frontend", "Backend", 
+		"high priority", "mid priority", "low priority",
+		"urgent", "Frontend", "Backend",
 		"RDV", "Communication", "Marketing", "Design",
 	}
 
@@ -135,10 +173,8 @@ func RenderProjectList(c *gin.Context) {
     for rows.Next() {
         var p models.Project
         var categories []string
-        // Adding detailed logging here
         if err := rows.Scan(&p.ID, &p.Name, pq.Array(&categories)); err != nil {
-            log.Printf("Error scanning project row: %v", err) // Log the exact error
-            log.Printf("Row Data -> ID: %v, Name: %v, Categories: %v", p.ID, p.Name, categories)
+            log.Printf("Error scanning project row: %v", err)
             c.String(http.StatusInternalServerError, "Error scanning projects")
             return
         }
@@ -147,7 +183,7 @@ func RenderProjectList(c *gin.Context) {
     }
 
     if err := rows.Err(); err != nil {
-        log.Printf("Error with rows iteration: %v", err) // Log if there's an error during iteration
+        log.Printf("Error with rows iteration: %v", err)
         c.String(http.StatusInternalServerError, "Error iterating over projects")
         return
     }
@@ -209,7 +245,7 @@ func AddCategory(c *gin.Context) {
 		return
 	}
 
-	query := "UPDATE projects SET categories = array_append(categories, $1) WHERE id = $2"
+	query := "UPDATE projects SET categories = array_append(COALESCE(categories, '{}'), $1) WHERE id = $2"
 	log.Printf("Executing query: %s with categoryName=%s, projectID=%d", query, categoryName, projectID)
 	_, err = db.DB.Exec(query, categoryName, projectID)
 	if err != nil {
@@ -249,7 +285,7 @@ func RemoveCategory(c *gin.Context) {
 	RenderCategories(c, projectID)
 }
 
-// RenderCategories refreshes and renders the project categories.
+// RenderCategories refreshes and renders the project categories partial.
 func RenderCategories(c *gin.Context, projectID int) {
 	var categories []string
 	query := "SELECT categories FROM projects WHERE id=$1"
@@ -261,15 +297,6 @@ func RenderCategories(c *gin.Context, projectID int) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/project_categories.html")
-	if err != nil {
-		log.Printf("Error parsing template: %v", err)
-		c.String(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	data := gin.H{"ProjectID": projectID, "Categories": categories}
-	c.Status(http.StatusOK)
-	c.Header("Content-Type", "text/html; charset=utf-8")
-	tmpl.ExecuteTemplate(c.Writer, "project_categories", data)
+	data := gin.H{"ID": projectID, "Categories": categories}
+	RenderP(c, "project_categories.html", data)
 }

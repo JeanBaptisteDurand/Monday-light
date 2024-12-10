@@ -2,16 +2,14 @@
 <h2>{{.Project.Name}}</h2>
 
 <h4>Catégories</h4>
-<div id="project-categories" hx-get="/project/{{.Project.ID}}" hx-trigger="load" hx-target="#project-categories" hx-swap="outerHTML" hx-on="htmx:responseError alert('HTMX Error: ' + event.detail.xhr.responseText)">
-    {{/* On va recharger ce bloc via RenderCategories, donc on le place dans un template séparé. 
-        Mais ici, on va juste l'inclure directement au premier load. */}}
-    {{template "project_categories" .}}
+<div id="project-categories">
+    {{template "project_categories" .Project}}
 </div>
 
 <hr>
 
 <h4>Ajouter une tâche</h4>
-<form hx-post="/project/{{.Project.ID}}/task" hx-target="#content" class="mb-3">
+<form hx-post="/project/{{.Project.ID}}/task" hx-target="#content" class="mb-3" hx-push-url="false">
     <div class="row g-2 mb-2">
         <div class="col">
             <input type="text" name="task_name" class="form-control form-control-sm" placeholder="Nom de la tâche" required>

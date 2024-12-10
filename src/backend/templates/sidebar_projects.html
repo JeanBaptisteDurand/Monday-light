@@ -1,11 +1,15 @@
 {{define "sidebar_projects"}}
-<ul class="list-group">
-    {{range .Projects}}
-    <li class="list-group-item">
-      <a href="/project/{{.ID}}" hx-get="/project/{{.ID}}" hx-target="#content">
+<ul class="list-group list-group-flush">
+  {{range .Projects}}
+  <li class="list-group-item">
+    <span style="cursor:pointer;"
+          hx-get="/project/{{.ID}}"
+          hx-target="#content"
+          hx-swap="innerHTML"
+          hx-push-url="false">
         {{.Name}}
-      </a>
-    </li>
-    {{end}}
+    </span>
+  </li>
+  {{end}}
 </ul>
 {{end}}
