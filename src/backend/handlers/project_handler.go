@@ -17,9 +17,9 @@ import (
 // RenderP chooses the template rendering strategy depending on HTMX request or not.
 func RenderP(c *gin.Context, contentTemplate string, data gin.H) {
     if c.GetHeader("HX-Request") != "" {
-        // HTMX request: parse only content template (and related partials)
+        // HTMX request: parse only the content template and the partial
         tmpl, err := template.ParseFiles(
-            "templates/"+contentTemplate,
+            "templates/" + contentTemplate,
             "templates/project_categories.html",
         )
         if err != nil {
@@ -32,10 +32,10 @@ func RenderP(c *gin.Context, contentTemplate string, data gin.H) {
             c.String(http.StatusInternalServerError, err.Error())
         }
     } else {
-        // Normal request: parse base layout + sidebar + partials
+        // Normal request: parse base layout + main content + sidebar + categories partial
         tmpl, err := template.ParseFiles(
             "templates/base.html",
-            "templates/"+contentTemplate,
+            "templates/" + contentTemplate,
             "templates/sidebar_projects.html",
             "templates/project_categories.html",
         )
@@ -285,7 +285,6 @@ func RemoveCategory(c *gin.Context) {
 	RenderCategories(c, projectID)
 }
 
-// RenderCategories refreshes and renders the project categories partial.
 func RenderCategories(c *gin.Context, projectID int) {
 	var categories []string
 	query := "SELECT categories FROM projects WHERE id=$1"
@@ -298,5 +297,18 @@ func RenderCategories(c *gin.Context, projectID int) {
 	}
 
 	data := gin.H{"ID": projectID, "Categories": categories}
-	RenderP(c, "project_categories.html", data)
+
+	tmpl, err := template.ParseFiles("templates/project_categories.html")
+	if err != nil {
+		log.Printf("Error parsing template: %v", err)
+		c.String(http.StatusInternalServerError, "Error parsing template")
+		return
+	}
+
+	c.Status(http.StatusOK)
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	if err := tmpl.ExecuteTemplate(c.Writer, "project_categories", data); err != nil {
+		log.Printf("Error executing template: %v", err)
+		c.String(http.StatusInternalServerError, "Error rendering template")
+	}
 }
