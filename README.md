@@ -3,10 +3,15 @@
 it lack data validation, retour visuelle, confirmation, projet perso pour apprendre go template avec htmx
 jai fait une grosse erreur de conception dans mes templates mais au moins maintenant je sais comment ca marche (reference sur la partie avec exemple de template)
 
+fix spa
+fix template
+refacto
+method / getter / setter / interface
+
 ## To do
 searchbar ou trie par bouton genre par tags
 ### 1
-gerer display et ajout et delete de tag cote front
+when add remove tag (refresh dropdown for tags tache)
 
 
 faire les tasks

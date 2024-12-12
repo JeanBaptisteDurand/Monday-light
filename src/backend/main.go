@@ -15,9 +15,9 @@ func main() {
     db.InitDB()
     defer db.DB.Close()
 
-	gin.SetMode(gin.DebugMode)
+    gin.SetMode(gin.DebugMode)
     r := gin.Default()
-	r.LoadHTMLGlob("templates/*")
+    r.LoadHTMLGlob("templates/*")
     r.Static("/static", "./frontend/static")
 
     // Public routes
@@ -38,7 +38,11 @@ func main() {
         authorized.POST("/project/:id/category", handlers.AddCategory)
         authorized.POST("/project/:id/category/remove", handlers.RemoveCategory)
 
+        // Task-related routes
         authorized.POST("/project/:id/task", handlers.CreateTask)
+        authorized.GET("/project/:id/task/:task_id", handlers.GetTaskDetail)
+        authorized.POST("/project/:id/task/:task_id/next_status", handlers.NextTaskStatus)
+        authorized.POST("/project/:id/task/:task_id/assign", handlers.AssignToSelf)
 
         authorized.GET("/recap", handlers.ShowRecap)
         authorized.GET("/param", handlers.ShowParam)

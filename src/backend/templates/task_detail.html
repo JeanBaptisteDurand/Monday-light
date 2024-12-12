@@ -1,0 +1,53 @@
+<div>
+    <h4>{{.Task.Name}}</h4>
+    <p><strong>Description:</strong> {{.Task.Description}}</p>
+    <p><strong>Catégorie:</strong> {{.Task.Category}}</p>
+    <p><strong>Status:</strong> {{.Task.Status}}</p>
+    <p><strong>Estimé (min):</strong> {{.Task.EstimatedTime}}</p>
+    <p><strong>Réel (min):</strong> {{.Task.RealTime}}</p>
+    <p><strong>Assignés:</strong> 
+      {{if .Task.AssignedUsers}}
+        {{range .Task.AssignedUsers}}<span class="badge bg-info text-dark">User {{.}}</span> {{end}}
+      {{else}}
+        Aucun
+      {{end}}
+    </p>
+  
+    {{if or (eq .Task.Status "assigned") (eq .Task.Status "to_check")}}
+    <div class="progress mb-2">
+      <div class="progress-bar" role="progressbar" style="width:{{.Progress}}%;" 
+           aria-valuenow="{{.Task.RealTime}}" aria-valuemin="0" aria-valuemax="{{.Task.EstimatedTime}}">
+      </div>
+    </div>
+    <p>Progression: {{.Task.RealTime}} / {{.Task.EstimatedTime}} min ({{.Progress}}%)</p>
+    {{end}}
+  
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-secondary me-2" onclick="closeTaskModal()">Fermer</button>
+  
+      {{if eq .Task.Status "backlog"}}
+      <form method="post" action="/project/{{.Task.ProjectID}}/task/{{.Task.ID}}/next_status" hx-target="#taskDetailContent">
+        <button class="btn btn-primary">Passer à 'to_assign'</button>
+      </form>
+      {{end}}
+  
+      {{if eq .Task.Status "to_assign"}}
+      <form method="post" action="/project/{{.Task.ProjectID}}/task/{{.Task.ID}}/assign" hx-target="#taskDetailContent">
+        <button class="btn btn-success">S'assigner</button>
+      </form>
+      {{end}}
+  
+      {{if eq .Task.Status "assigned"}}
+      <form method="post" action="/project/{{.Task.ProjectID}}/task/{{.Task.ID}}/next_status" hx-target="#taskDetailContent">
+        <button class="btn btn-warning">Passer à 'to_check'</button>
+      </form>
+      {{end}}
+  
+      {{if eq .Task.Status "to_check"}}
+      <form method="post" action="/project/{{.Task.ProjectID}}/task/{{.Task.ID}}/next_status" hx-target="#taskDetailContent">
+        <button class="btn btn-success">Passer à 'done'</button>
+      </form>
+      {{end}}
+    </div>
+  </div>
+  

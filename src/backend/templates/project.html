@@ -1,12 +1,24 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>{{.Title}}</title>
+<link rel="stylesheet" href="/static/bootstrap.min.css">
+<link rel="stylesheet" href="/static/styles.css">
+<script src="/static/htmx.min.js"></script>
+<script src="/static/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class="container mt-3">
+    {{template "content" .}}
+</div>
+</body>
+</html>
+{{end}}
+
 {{define "content"}}
 <h2>{{.Project.Name}}</h2>
-
-<h4>Catégories</h4>
-<div id="project-categories">
-    {{template "project_categories" .Project}}
-</div>
-
-<hr>
 
 <h4>Ajouter une tâche</h4>
 <form hx-post="/project/{{.Project.ID}}/task" hx-target="#content" class="mb-3" hx-push-url="false">
@@ -53,7 +65,7 @@
             </thead>
             <tbody>
                 {{range .EnCoursTasks}}
-                <tr>
+                <tr style="cursor:pointer;" onclick="openTaskModal({{.ID}})">
                     <td>{{.Name}}</td>
                     <td>{{.Description}}</td>
                     <td>{{.Category}}</td>
@@ -80,7 +92,7 @@
             </thead>
             <tbody>
                 {{range .BacklogTasks}}
-                <tr>
+                <tr style="cursor:pointer;" onclick="openTaskModal({{.ID}})">
                     <td>{{.Name}}</td>
                     <td>{{.Description}}</td>
                     <td>{{.Category}}</td>
@@ -107,7 +119,7 @@
             </thead>
             <tbody>
                 {{range .DoneTasks}}
-                <tr>
+                <tr style="cursor:pointer;" onclick="openTaskModal({{.ID}})">
                     <td>{{.Name}}</td>
                     <td>{{.Description}}</td>
                     <td>{{.Category}}</td>
@@ -120,4 +132,35 @@
         </table>
     </div>
 </div>
+
+<!-- Modal for Task Detail -->
+<div id="taskDetailModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+  <div class="modal-dialog" style="max-width:600px; margin:5% auto;">
+    <div class="modal-content p-3" id="taskDetailContent">
+      <!-- Content loaded via AJAX -->
+    </div>
+  </div>
+</div>
+
+<script>
+function openTaskModal(taskID) {
+    fetch("/project/{{.Project.ID}}/task/" + taskID)
+      .then(response => response.text())
+      .then(html => {
+          document.getElementById('taskDetailContent').innerHTML = html;
+          document.getElementById('taskDetailModal').style.display = 'block';
+      });
+}
+function closeTaskModal() {
+    document.getElementById('taskDetailModal').style.display = 'none';
+}
+</script>
+
+<hr>
+
+<h4>Catégories</h4>
+<div id="project-categories">
+    {{template "project_categories" .Project}}
+</div>
+
 {{end}}
