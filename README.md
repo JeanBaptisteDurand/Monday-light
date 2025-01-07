@@ -1,5 +1,9 @@
 # Monday-light
 
+fix spa et template (gin et go)
+
+
+
 it lack data validation, retour visuelle, confirmation, projet perso pour apprendre go template avec htmx
 jai fait une grosse erreur de conception dans mes templates mais au moins maintenant je sais comment ca marche (reference sur la partie avec exemple de template)
 
