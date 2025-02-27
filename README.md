@@ -1,6 +1,9 @@
 # Monday-light
 
 fix spa et template (gin et go)
+parser une seule fois les templates
+faire une page qui doit choisir son header et son body
+enlever les templates du package de base, utiliser que ceux de gin
 
 
 
