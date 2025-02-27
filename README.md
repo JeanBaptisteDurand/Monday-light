@@ -15,6 +15,10 @@ fix template
 refacto
 method / getter / setter / interface
 
+## tech debt
+
+coleur du profil limiter a 10 user
+
 ## To do
 searchbar ou trie par bouton genre par tags
 ### 1
