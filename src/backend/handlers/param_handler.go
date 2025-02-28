@@ -4,6 +4,7 @@ import (
     "database/sql"
     "net/http"
     "strings"
+    "html"
 
     "github.com/gin-gonic/gin"
     "golang.org/x/crypto/bcrypt"
@@ -201,7 +202,7 @@ func renderUpdatedField(c *gin.Context, userID int, field string) {
     // But if you trust the stored data, you can leave it as is
     // We'll do it for safety:
     // We'll reintroduce the old approach:
-    escapedValue := template.HTMLEscapeString(value)
+    escapedValue := html.EscapeString(value)
 
     dd := `<dd class="col-sm-8 d-flex justify-content-between align-items-center" id="` + field + `-field">
             <span>` + escapedValue + `</span>

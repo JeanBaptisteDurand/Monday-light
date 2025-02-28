@@ -1,23 +1,4 @@
-{{define "base"}}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<title>{{.Title}}</title>
-<link rel="stylesheet" href="/static/bootstrap.min.css">
-<link rel="stylesheet" href="/static/styles.css">
-<script src="/static/htmx.min.js"></script>
-<script src="/static/bootstrap.bundle.min.js"></script>
-</head>
-<body>
-<div class="container mt-3">
-    {{template "content" .}}
-</div>
-</body>
-</html>
-{{end}}
-
-{{define "content"}}
+{{ define "project_content" }}
 <h2>{{.Project.Name}}</h2>
 
 <h4>Ajouter une tâche</h4>

@@ -8,9 +8,10 @@ enlever les templates du package de base, utiliser que ceux de gin
 
 
 it lack data validation, retour visuelle, confirmation, projet perso pour apprendre go template avec htmx
+
 jai fait une grosse erreur de conception dans mes templates mais au moins maintenant je sais comment ca marche (reference sur la partie avec exemple de template)
 
-fix spa
+fix spa (il ny a plus les fonction render, entre acces direct et indirect selon le param htmx, voir ancien commit avant fevrier)
 fix template
 refacto
 method / getter / setter / interface
@@ -18,6 +19,7 @@ method / getter / setter / interface
 ## tech debt
 
 coleur du profil limiter a 10 user
+if/else dans base.html
 
 ## To do
 searchbar ou trie par bouton genre par tags
