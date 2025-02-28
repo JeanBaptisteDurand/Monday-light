@@ -2,26 +2,23 @@ package handlers
 
 import (
     "database/sql"
-    "html/template"
     "net/http"
     "strings"
-
-    "monday-light/db"
-    "monday-light/models"
+    "html"
 
     "github.com/gin-gonic/gin"
     "golang.org/x/crypto/bcrypt"
+    "monday-light/db"
+    "monday-light/models"
 )
 
-// ShowParam displays the user parameters
 func ShowParam(c *gin.Context) {
-    userIDVal, _ := c.Get("userID")
-    userID := userIDVal.(int)
+    userID := c.GetInt("userID")
 
     var user models.User
     err := db.DB.QueryRow(`
-        SELECT id, username, email, discord_id, discord_pseudo, color 
-        FROM users 
+        SELECT id, username, email, discord_id, discord_pseudo, color
+        FROM users
         WHERE id=$1
     `, userID).Scan(&user.ID, &user.Username, &user.Email, &user.DiscordID, &user.DiscordPseudo, &user.Color)
     if err != nil {
@@ -30,15 +27,14 @@ func ShowParam(c *gin.Context) {
     }
 
     data := gin.H{
-        "User":     user,
-        "Username": user.Username,
-        "Title":    "Paramètres",
+        "Title":           "Paramètres",
+        "Username":        user.Username,
+        "User":            user,
+        "ContentTemplate": "param_content", // snippet in param.html
     }
-
-    Render(c, "param.html", data)
+    Render(c, data)
 }
 
-// ShowParamEdit returns a form to edit a specific field
 func ShowParamEdit(c *gin.Context) {
     field := c.Query("field")
     if field == "" {
@@ -46,12 +42,13 @@ func ShowParamEdit(c *gin.Context) {
         return
     }
 
-    userIDVal, _ := c.Get("userID")
-    userID := userIDVal.(int)
+    userID := c.GetInt("userID")
 
     var user models.User
-    err := db.DB.QueryRow(`SELECT username, email, discord_id, discord_pseudo FROM users WHERE id=$1`, userID).
-        Scan(&user.Username, &user.Email, &user.DiscordID, &user.DiscordPseudo)
+    err := db.DB.QueryRow(`
+        SELECT username, email, discord_id, discord_pseudo
+        FROM users WHERE id=$1
+    `, userID).Scan(&user.Username, &user.Email, &user.DiscordID, &user.DiscordPseudo)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to load user info")
         return
@@ -68,35 +65,21 @@ func ShowParamEdit(c *gin.Context) {
     case "discord_pseudo":
         currentValue = user.DiscordPseudo
     case "password":
-        // password has no current value
         currentValue = ""
     default:
         c.String(http.StatusBadRequest, "Invalid field")
         return
     }
 
-    tmpl, err := template.ParseFiles("templates/param_edit_field.html")
-    if err != nil {
-        c.String(http.StatusInternalServerError, err.Error())
-        return
-    }
-    data := gin.H{
+    // Render just the snippet "param_edit_field"
+    c.HTML(http.StatusOK, "param_edit_field", gin.H{
         "Field":        field,
         "CurrentValue": currentValue,
-    }
-
-    c.Status(http.StatusOK)
-    c.Header("Content-Type", "text/html; charset=utf-8")
-    if err := tmpl.ExecuteTemplate(c.Writer, "content", data); err != nil {
-        c.String(http.StatusInternalServerError, err.Error())
-    }
+    })
 }
 
-// UpdateParam updates the specified user field
 func UpdateParam(c *gin.Context) {
-    userIDVal, _ := c.Get("userID")
-    userID := userIDVal.(int)
-
+    userID := c.GetInt("userID")
     field := c.PostForm("field")
     if field == "" {
         c.String(http.StatusBadRequest, "Field required")
@@ -104,17 +87,14 @@ func UpdateParam(c *gin.Context) {
     }
 
     if field == "password" {
-        // Handle password change
-        oldPassword := c.PostForm("old_password")
-        newPassword := c.PostForm("new_password")
-        confirmPassword := c.PostForm("confirm_password")
-
-        if newPassword != confirmPassword {
+        oldPass := c.PostForm("old_password")
+        newPass := c.PostForm("new_password")
+        confirm := c.PostForm("confirm_password")
+        if newPass != confirm {
             c.String(http.StatusBadRequest, "Les mots de passe ne correspondent pas.")
             return
         }
 
-        // Fetch current password hash
         var currentHash string
         err := db.DB.QueryRow("SELECT password_hash FROM users WHERE id=$1", userID).Scan(&currentHash)
         if err != nil {
@@ -122,32 +102,29 @@ func UpdateParam(c *gin.Context) {
             return
         }
 
-        // Check old password
-        if bcrypt.CompareHashAndPassword([]byte(currentHash), []byte(oldPassword)) != nil {
+        if bcrypt.CompareHashAndPassword([]byte(currentHash), []byte(oldPass)) != nil {
             c.String(http.StatusUnauthorized, "Ancien mot de passe incorrect.")
             return
         }
 
-        // Hash new password
-        hashed, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+        hashed, err := bcrypt.GenerateFromPassword([]byte(newPass), bcrypt.DefaultCost)
         if err != nil {
             c.String(http.StatusInternalServerError, "Erreur interne, réessayez plus tard.")
             return
         }
 
-        // Update in DB
         _, err = db.DB.Exec("UPDATE users SET password_hash=$1 WHERE id=$2", string(hashed), userID)
         if err != nil {
             c.String(http.StatusInternalServerError, "Échec de la mise à jour du mot de passe.")
             return
         }
 
-        // Re-render the password field line
+        c.Header("HX-Trigger", "paramSuccess")
         renderUpdatedField(c, userID, field)
         return
     }
 
-    // For other fields
+    // Other fields
     value := strings.TrimSpace(c.PostForm("value"))
     if value == "" {
         c.String(http.StatusBadRequest, "Value required")
@@ -180,28 +157,29 @@ func UpdateParam(c *gin.Context) {
     }
 
     if field == "username" {
-        // Reload entire page so that pseudo is updated in the navbar
+        // reload entire page => update navbar
         c.Header("HX-Trigger", "pseudoSuccess")
         c.Status(http.StatusOK)
         return
     }
-    
-    // For other fields, send a trigger on success
+
     c.Header("HX-Trigger", "paramSuccess")
-    renderUpdatedField(c, userID, field)    
+    renderUpdatedField(c, userID, field)
 }
 
-// renderUpdatedField re-renders a single field line after update
 func renderUpdatedField(c *gin.Context, userID int, field string) {
     var user models.User
-    err := db.DB.QueryRow(`SELECT username, email, discord_id, discord_pseudo FROM users WHERE id=$1`, userID).
-        Scan(&user.Username, &user.Email, &user.DiscordID, &user.DiscordPseudo)
+    err := db.DB.QueryRow(`
+        SELECT username, email, discord_id, discord_pseudo
+        FROM users
+        WHERE id=$1
+    `, userID).Scan(&user.Username, &user.Email, &user.DiscordID, &user.DiscordPseudo)
     if err != nil {
         c.String(http.StatusInternalServerError, "Failed to load user info")
         return
     }
 
-    // Based on field, return a <dd> line just like original
+    // Use old logic with template.HTMLEscapeString if you want to ensure safety
     var value string
     switch field {
     case "username":
@@ -219,10 +197,15 @@ func renderUpdatedField(c *gin.Context, userID int, field string) {
         return
     }
 
-    // Rebuild the line with edit icon
-    // This should match the structure in param.html
+    // If you want to escape it:
+    //escapedValue := template.HTMLEscapeString(value)
+    // But if you trust the stored data, you can leave it as is
+    // We'll do it for safety:
+    // We'll reintroduce the old approach:
+    escapedValue := html.EscapeString(value)
+
     dd := `<dd class="col-sm-8 d-flex justify-content-between align-items-center" id="` + field + `-field">
-            <span>` + template.HTMLEscapeString(value) + `</span>
+            <span>` + escapedValue + `</span>
             <i class="bi bi-pencil-square text-info"
                style="cursor:pointer;"
                hx-get="/param/edit?field=` + field + `"

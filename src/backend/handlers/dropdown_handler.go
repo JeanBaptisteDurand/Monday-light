@@ -5,9 +5,15 @@ import (
     "github.com/gin-gonic/gin"
 )
 
+// ShowRecap => old logic: "Simple WIP page"
 func ShowRecap(c *gin.Context) {
-    // Simple WIP page
-    Render(c, "recap.html", gin.H{})
+    // If you want "recap_content" subtemplate:
+    data := gin.H{
+        "Title":           "Recap",
+        "Username":        "Unknown", // or fetch from DB
+        "ContentTemplate": "recap_content", // define "recap_content" in recap.html
+    }
+    Render(c, data)
 }
 
 func Logout(c *gin.Context) {
