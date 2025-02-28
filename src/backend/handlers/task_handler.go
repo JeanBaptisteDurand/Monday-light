@@ -2,7 +2,6 @@ package handlers
 
 import (
     "database/sql"
-    "html/template"
     "log"
     "math"
     "net/http"
@@ -10,11 +9,11 @@ import (
     "time"
 
     "github.com/gin-gonic/gin"
-    //"github.com/lib/pq"
     "monday-light/db"
     "monday-light/models"
 )
 
+// CreateTask => insert new "backlog" task
 func CreateTask(c *gin.Context) {
     projectID, err := strconv.Atoi(c.Param("id"))
     if err != nil {
@@ -24,7 +23,7 @@ func CreateTask(c *gin.Context) {
 
     name := c.PostForm("task_name")
     description := c.PostForm("task_description")
-    category := c.PostForm("task_category") // Peut être vide
+    category := c.PostForm("task_category")
     estimatedTimeStr := c.PostForm("task_estimated_time")
 
     if name == "" {
@@ -37,39 +36,33 @@ func CreateTask(c *gin.Context) {
         estimatedTime, _ = strconv.Atoi(estimatedTimeStr)
     }
 
-    // Par défaut: status = "backlog"
-    // L'utilisateur a demandé "la tâche a par défaut un status backlog"
-    // (Dans votre code initial, c'était 'to_assign', ajustez selon vos besoins)
-    err = db.DB.QueryRow(`
+    _, err = db.DB.Exec(`
         INSERT INTO tasks (name, description, category, project_id, status, estimated_time, real_time)
-        VALUES ($1, $2, $3, $4, 'backlog', $5, 0) RETURNING id
-    `, name, description, category, projectID, estimatedTime).Scan(new(int))
+        VALUES ($1, $2, $3, $4, 'backlog', $5, 0)
+    `, name, description, category, projectID, estimatedTime)
     if err != nil {
         c.String(http.StatusInternalServerError, "Database error (create task)")
         return
     }
 
+    // Reload the project
     ShowProject(c)
 }
 
-// GetTaskDetail returns the HTML for the task detail popup
+// GetTaskDetail => partial snippet "task_detail"
 func GetTaskDetail(c *gin.Context) {
-    projectID, err := strconv.Atoi(c.Param("id"))
-    if err != nil {
-        c.String(http.StatusBadRequest, "Invalid project ID")
-        return
-    }
-
-    taskID, err := strconv.Atoi(c.Param("task_id"))
-    if err != nil {
-        c.String(http.StatusBadRequest, "Invalid task ID")
-        return
-    }
+    projectID, _ := strconv.Atoi(c.Param("id"))
+    taskID, _ := strconv.Atoi(c.Param("task_id"))
 
     var t models.Task
-    query := `SELECT id, name, description, category, project_id, status, estimated_time, real_time, created_at, taken_from
-              FROM tasks WHERE id=$1 AND project_id=$2`
-    err = db.DB.QueryRow(query, taskID, projectID).Scan(&t.ID, &t.Name, &t.Description, &t.Category, &t.ProjectID, &t.Status, &t.EstimatedTime, &t.RealTime, &t.CreatedAt, &t.TakenFrom)
+    err := db.DB.QueryRow(`
+        SELECT id, name, description, category, project_id, status, estimated_time, real_time, created_at, taken_from
+        FROM tasks
+        WHERE id=$1 AND project_id=$2
+    `, taskID, projectID).Scan(
+        &t.ID, &t.Name, &t.Description, &t.Category, &t.ProjectID, &t.Status,
+        &t.EstimatedTime, &t.RealTime, &t.CreatedAt, &t.TakenFrom,
+    )
     if err != nil {
         if err == sql.ErrNoRows {
             c.String(http.StatusNotFound, "Tâche introuvable")
@@ -79,10 +72,9 @@ func GetTaskDetail(c *gin.Context) {
         return
     }
 
-    // Fetch assigned users
     t.AssignedUsers = getAssignedUsers(taskID)
 
-    // Calculate real time if assigned or to_check
+    // compute real_time if assigned/to_check
     if t.Status == "assigned" || t.Status == "to_check" {
         if !t.TakenFrom.IsZero() {
             diff := time.Since(t.TakenFrom).Minutes()
@@ -90,42 +82,29 @@ func GetTaskDetail(c *gin.Context) {
         }
     }
 
-    // Compute progress percentage in code
-    var progress int
+    // progress
+    progress := 0
     if t.EstimatedTime > 0 {
-        progress = int(math.Floor(float64(t.RealTime) / float64(t.EstimatedTime) * 100))
-        if progress > 100 {
-            progress = 100
-        }
-        if progress < 0 {
-            progress = 0
-        }
-    } else {
-        progress = 0
+        p := float64(t.RealTime) / float64(t.EstimatedTime) * 100
+        if p < 0 { p = 0 }
+        if p > 100 { p = 100 }
+        progress = int(math.Floor(p))
     }
 
-    data := gin.H{
+    c.HTML(http.StatusOK, "task_detail", gin.H{
         "Task":     t,
         "Progress": progress,
-    }
-
-    tmpl, err := template.ParseFiles("templates/task_detail.html")
-    if err != nil {
-        c.String(http.StatusInternalServerError, err.Error())
-        return
-    }
-
-    c.Header("Content-Type", "text/html; charset=utf-8")
-    tmpl.Execute(c.Writer, data)
+    })
 }
 
-// NextTaskStatus advances the task status along the workflow
+// NextTaskStatus => e.g. backlog->to_assign->assigned->to_check->done
 func NextTaskStatus(c *gin.Context) {
     projectID, _ := strconv.Atoi(c.Param("id"))
     taskID, _ := strconv.Atoi(c.Param("task_id"))
 
     var status string
-    err := db.DB.QueryRow("SELECT status FROM tasks WHERE id=$1 AND project_id=$2", taskID, projectID).Scan(&status)
+    err := db.DB.QueryRow("SELECT status FROM tasks WHERE id=$1 AND project_id=$2",
+        taskID, projectID).Scan(&status)
     if err != nil {
         c.String(http.StatusNotFound, "Tâche introuvable")
         return
@@ -137,24 +116,24 @@ func NextTaskStatus(c *gin.Context) {
         return
     }
 
-    // If moving to assigned, set taken_from = NOW() if not set
     if next == "assigned" {
-        _, err = db.DB.Exec("UPDATE tasks SET status=$1, taken_from=NOW() WHERE id=$2 AND project_id=$3", next, taskID, projectID)
+        _, err = db.DB.Exec("UPDATE tasks SET status=$1, taken_from=NOW() WHERE id=$2 AND project_id=$3",
+            next, taskID, projectID)
     } else if next == "done" {
-        // When moving to done, fix the real_time as final
-        // real_time = difference (in minutes) between taken_from and NOW()
-        // only if taken_from is not zero
-        var takenFrom time.Time
-        err = db.DB.QueryRow("SELECT taken_from FROM tasks WHERE id=$1", taskID).Scan(&takenFrom)
-        if err == nil && !takenFrom.IsZero() {
-            diff := time.Since(takenFrom).Minutes()
+        var taken time.Time
+        err = db.DB.QueryRow("SELECT taken_from FROM tasks WHERE id=$1", taskID).Scan(&taken)
+        if err == nil && !taken.IsZero() {
+            diff := time.Since(taken).Minutes()
             realTime := int(math.Floor(diff))
-            _, err = db.DB.Exec("UPDATE tasks SET status=$1, real_time=$2 WHERE id=$3 AND project_id=$4", next, realTime, taskID, projectID)
+            _, err = db.DB.Exec("UPDATE tasks SET status=$1, real_time=$2 WHERE id=$3 AND project_id=$4",
+                next, realTime, taskID, projectID)
         } else {
-            _, err = db.DB.Exec("UPDATE tasks SET status=$1 WHERE id=$2 AND project_id=$3", next, taskID, projectID)
+            _, err = db.DB.Exec("UPDATE tasks SET status=$1 WHERE id=$2 AND project_id=$3",
+                next, taskID, projectID)
         }
     } else {
-        _, err = db.DB.Exec("UPDATE tasks SET status=$1 WHERE id=$2 AND project_id=$3", next, taskID, projectID)
+        _, err = db.DB.Exec("UPDATE tasks SET status=$1 WHERE id=$2 AND project_id=$3",
+            next, taskID, projectID)
     }
 
     if err != nil {
@@ -162,11 +141,11 @@ func NextTaskStatus(c *gin.Context) {
         return
     }
 
-    // Return updated detail
+    // re-render snippet
     GetTaskDetail(c)
 }
 
-// AssignToSelf assigns the current user to a 'to_assign' task and moves it to 'assigned'
+// AssignToSelf => user_tasks + sets status=assigned
 func AssignToSelf(c *gin.Context) {
     userIDVal, _ := c.Get("userID")
     userID := userIDVal.(int)
@@ -175,26 +154,26 @@ func AssignToSelf(c *gin.Context) {
     taskID, _ := strconv.Atoi(c.Param("task_id"))
 
     var status string
-    err := db.DB.QueryRow("SELECT status FROM tasks WHERE id=$1 AND project_id=$2", taskID, projectID).Scan(&status)
+    err := db.DB.QueryRow("SELECT status FROM tasks WHERE id=$1 AND project_id=$2",
+        taskID, projectID).Scan(&status)
     if err != nil {
         c.String(http.StatusNotFound, "Tâche introuvable")
         return
     }
-
     if status != "to_assign" {
         c.String(http.StatusBadRequest, "Tâche non assignable à ce stade")
         return
     }
 
-    // Insert user-task assignment
-    _, err = db.DB.Exec("INSERT INTO user_tasks (user_id, task_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", userID, taskID)
+    _, err = db.DB.Exec("INSERT INTO user_tasks (user_id, task_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+        userID, taskID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Erreur d'assignation")
         return
     }
 
-    // Passer la tâche en "assigned" et prendre le temps
-    _, err = db.DB.Exec("UPDATE tasks SET status='assigned', taken_from=NOW() WHERE id=$1 AND project_id=$2", taskID, projectID)
+    _, err = db.DB.Exec("UPDATE tasks SET status='assigned', taken_from=NOW() WHERE id=$1 AND project_id=$2",
+        taskID, projectID)
     if err != nil {
         c.String(http.StatusInternalServerError, "Erreur BDD lors du changement de statut")
         return
