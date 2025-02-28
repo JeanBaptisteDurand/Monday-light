@@ -1,28 +1,21 @@
 # Monday-light
 
-fix spa et template (gin et go)
-parser une seule fois les templates
-faire une page qui doit choisir son header et son body
-enlever les templates du package de base, utiliser que ceux de gin
+projet perso pour apprendre go template avec htmx
 
-
-
-it lack data validation, retour visuelle, confirmation, projet perso pour apprendre go template avec htmx
-
-jai fait une grosse erreur de conception dans mes templates mais au moins maintenant je sais comment ca marche (reference sur la partie avec exemple de template)
-
-fix spa (il ny a plus les fonction render, entre acces direct et indirect selon le param htmx, voir ancien commit avant fevrier)
-fix template
-refacto
 method / getter / setter / interface
+rajouter des err
+
+hx-on / push url
+quand je creer une categorie, penser a refresh aussi le dropdown de creation de tache
 
 ## tech debt
 
 coleur du profil limiter a 10 user
 if/else dans base.html
+param ne sont pas assez modulaire ( il faudrait que chaque champ soit un element d'une liste de un template, ca enleverai le html brut de renderUpdatedField)
 
 ## To do
-searchbar ou trie par bouton genre par tags
+
 ### 1
 when add remove tag (refresh dropdown for tags tache)
 
@@ -33,11 +26,12 @@ plus de champ a ajouter une tache
 creation de la tache ainsi que visu de la tache dans un pop up
 dropdown menu for categorie in a task
 bar de progression dans le temps reel (front) calculer a partir de taken from
-
-
 avoir un dashboard user avec leur tache prise
 
+it lack data validation, retour visuelle, confirmation
+
 ### 2
+searchbar ou trie par bouton genre par tags
 chat sur les taches
 fichiers dans les taches
 suppression de categorie
@@ -48,7 +42,6 @@ faire une vue par status perso des taches
 
 ### 3
 
-faire du trie dans les fichiers html et go
 proteger route individuel comme modif de compte
 changement url et retour en arriere et refresh
 gros boulot de front
@@ -67,8 +60,6 @@ bonne balise html de navigation
 
 do i check if the account exist when checking jwt ????
 mdp hacher avant envoie de front a back ?
-
-
 BUG : si token avec id inconnue, db error
 
 ## to do pour page param
@@ -77,52 +68,12 @@ plus jolie pop pour le changement de username
 icon modify qui se decale apres un update reussit
 afficher le succes du changement de mdp
 
-## revoir logique spa et srr
-
-passer dun parse a chaque requette -> a un modele avec plus de template mais sans reparse
-
-peut etre dactu ou pas (enlever dans Render le cas special pour projects.html en remplacant ca par une fonction variatique)
+## spa et srr
 
 pour lajout ou la suppresion delement en direct
 https://youtu.be/To-Mlm2AwD4?si=Wq2osxv2laQAy1mF
 https://youtu.be/To-Mlm2AwD4?si=pJdAwja2CFuuMOF2
 
-
-very slow cause i parse at each request
-bien expliquer le design actuel et comment devrait etre le bon design
-
-
-
-{{ define "header" }}
-<header>
-    <h1>Mon Header</h1>
-</header>
-{{ end }}
-
-{{ define "content1" }}
-<div>
-    <p>Contenu de la première page</p>
-</div>
-{{ end }}
-
-{{ define "content2" }}
-<div>
-    <p>Contenu de la deuxième page</p>
-</div>
-{{ end }}
-
-{{ define "layout" }}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mon Site</title>
-</head>
-<body>
-    {{ template "header" . }}
-    {{ template "content" . }}
-</body>
-</html>
-{{ end }}
 
 # readme a ajouter
 connection jwt
